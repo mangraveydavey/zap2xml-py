@@ -76,7 +76,7 @@ def get_args():
 
 
 def get_cached(cache_dir, cache_key, delay, url):
-  cache_path = cache_dir.joinpath(cache_key)
+  cache_path = cache_dir.joinpath(str(cache_key))
   if cache_path.is_file():
     print('FROM CACHE:', url)
     with open(cache_path, 'rb') as f:
@@ -84,8 +84,15 @@ def get_cached(cache_dir, cache_key, delay, url):
   else:
     print('Fetching:  ', url)
     try:
-      resp = urllib.request.urlopen(url)
-      result = resp.read()
+        req = urllib.request.Request(
+        url,
+        headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0',
+            'Accept': 'application/json, text/plain, */*'
+            }
+        )
+        resp = urllib.request.urlopen(req)
+        result = resp.read()
     except urllib.error.HTTPError as e:
       if e.code == 400:
         print('Got a 400 error!  Ignoring it.')
@@ -143,7 +150,7 @@ def main():
   remove_stale_cache(cache_dir, zap_time)
 
   out = ET.Element('tv')
-  out.set('source-info-url', 'http://tvlistings.zap2it.com/')
+  out.set('source-info-url', 'https://tvlistings.gracenote.com/')
   out.set('source-info-name', 'zap2it.com')
   out.set('generator-info-name', 'zap2xml.py')
   out.set('generator-info-url', 'github.com/arantius/zap2xml-py')
@@ -157,7 +164,7 @@ def main():
     qs = base_qs.copy()
     qs['lineupId'] = '%s-%s-DEFAULT' % (args.zap_country, args.zap_headendId)
     qs['time'] = i_time
-    url = 'https://tvlistings.zap2it.com/api/grid?'
+    url = 'https://tvlistings.gracenote.com/api/grid?'
     url += urllib.parse.urlencode(qs)
 
     result = get_cached(cache_dir, str(i_time), args.delay, url)
@@ -221,7 +228,7 @@ def main():
         for f in event['filter']:
           sub_el(prog_out, 'genre', lang='en', text=f[7:])
 
-  out_path = pathlib.Path(__file__).parent.joinpath('xmltv.xml')
+    out_path = pathlib.Path(__file__).parent.joinpath('xmltv.xml')
   with open(out_path.absolute(), 'wb') as f:
     f.write(b'<?xml version="1.0" encoding="UTF-8"?>\n')
     f.write(ET.tostring(out, encoding='UTF-8'))
