@@ -6,6 +6,7 @@ A very simple script to fetch EPG data from zap2it.com and write it to XMLTV for
 [Unreleased] - 2025-08-16
 
 Fixed
+
 Improved Error Handling in get_cached:
 Added handling for urllib.error.URLError to catch network issues (e.g., connection failures) and raise them with descriptive messages, enhancing script reliability.
 Added check for empty responses, returning a fallback JSON structure ({"note": "Empty response, treating as 400 error, skipping.", "channels": []}) to prevent crashes.
@@ -16,6 +17,7 @@ Added try-except block around json.loads(result) to catch json.decoder.JSONDecod
 Saves non-JSON responses to response_<timestamp>.html in the cache directory for troubleshooting.
 
 Changed
+
 Updated Default Parameters in get_args:
 Changed zap_aid default from 'gapzap' to 'orbebb' to use a more reliable affiliate ID for the Gracenote API.
 Updated zap_isOverride type from bool to str with default 'true' (lowercase) to match the API’s expected query parameter format.
@@ -27,10 +29,12 @@ Added printing of the first 500 characters of the response (result.decode('utf-8
 Prints HTTP status code and reason for errors, improving execution transparency.
 
 Added
+
 Response Caching for Debugging:
 When JSON parsing fails, non-JSON responses are saved to response_<timestamp>.html files in the cache directory, facilitating manual inspection of server errors (e.g., HTML error pages or CAPTCHA challenges).
 
 Notes
+
 The script continues to use the https://tvlistings.gracenote.com/api/grid endpoint. Changes address issues with invalid affiliate IDs, incorrect parameter formats, and insufficient error handling, improving reliability for fetching TV listings.
 Users can override the affiliate ID with --aid (e.g., --aid gapzap, --aid digiceltrin, --aid tribnyc2dl, --aid lat) and other parameters (e.g., --pref, --timespan) for flexibility.
 If the Gracenote API introduces CAPTCHA or authentication requirements, further updates may be needed (e.g., cookie handling or Selenium for CAPTCHA).
